@@ -1,5 +1,5 @@
 import 'course.dart';
-import '../db.dart';
+import '../databaseService.dart';
 
 class Teacher {
   int? id;

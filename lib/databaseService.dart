@@ -3,15 +3,14 @@ import 'dart:ffi';
 import 'model/teacher.dart';
 import 'model/course.dart';
 import 'model/course_time.dart';
-//import 'main.dart';
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:developer' as developer;
 
-class Db {
-  Db();
+class DatabaseService {
+  DatabaseService();
 
   var db;
 
@@ -58,13 +57,8 @@ class Db {
       )''');
 
     if (insertData) {
-      //print("true");
       initDemoData();
-    } else {
-      //print("false");
-    }
-
-    //print("initDatabase end");
+    } else {}
   }
 
   void initDemoData() async {
@@ -97,13 +91,6 @@ class Db {
       'user_id': 1,
       'course_ids': '[2]',
     });
-/*
-    var result = await db.query('Users');
-    developer.log(result.toString());
-*/
-    var result = await db.query('Teachers');
-    //print(result.toString());
-//    await db.close();
   }
 
   void closeDatabase() async {
@@ -158,8 +145,6 @@ class Db {
 
     List<Course> courses = [];
 
-    //print(result.toString());
-
     result.forEach((r) => {
           courses.add(Course(
               r['title'],
@@ -190,8 +175,6 @@ class Db {
   }
 
   Future<int> insertCourse(Course course, {int teacherId = -1}) async {
-    //print(course.toMap().toString());
-
     var index = await db.insert(
       'Courses',
       course.toMap(),
@@ -215,11 +198,6 @@ class Db {
           where: "id = ?", whereArgs: [teacherId]);
     }
 
-    var result = await db.query('Courses');
-    developer.log(result.toString());
-    result = await getCourses();
-    developer.log(result.toString());
-
     return index;
   }
 
@@ -230,8 +208,5 @@ class Db {
 
   void deleteCourse(int courseId) async {
     await db.delete('Courses', where: "id = ?", whereArgs: [courseId]);
-
-    var result = await db.query('Courses');
-    developer.log(result.toString());
   }
 }

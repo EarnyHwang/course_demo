@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'db.dart';
+import 'databaseService.dart';
 import 'model/teacher.dart';
 import 'model/course.dart';
 import 'model/course_time.dart';
@@ -10,7 +10,7 @@ void main() {
   runApp(const MyApp());
 }
 
-var dbController;
+var databaseService;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -49,8 +49,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState() {
-    dbController = Db();
-    dbController.initDatabase();
+    databaseService = DatabaseService();
+    databaseService.initDatabase();
     developer.log("_MyHomePageState");
   }
 
@@ -70,9 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
     developer.log("_incrementCounter");
     Teacher t = Teacher(1, "title", "name", "image");
     developer.log(t.toString());
-    dbController.insertTeacher(t);
+    databaseService.insertTeacher(t);
 
-    var tt = dbController.getTeachers();
+    var tt = databaseService.getTeachers();
     developer.log(tt.toString());
 */
     CourseTime ct = CourseTime(7, "00:00", "12:00");
@@ -80,19 +80,19 @@ class _MyHomePageState extends State<MyHomePage> {
     ctList.add(ct);
     Course c = Course("title", "url", ctList);
     //c.id = 1;
-    await dbController.insertCourse(c);
+    await databaseService.insertCourse(c);
     //c.title = 'title2';
-    //dbController.updateCourse(c);
+    //databaseService.updateCourse(c);
 
-    //dbController.deleteCourse(1);
+    //databaseService.deleteCourse(1);
 
-    //List<Teacher> ts = await dbController.getTeachers();
+    //List<Teacher> ts = await databaseService.getTeachers();
     //developer.log(ts.toString());
 
-    //List<Course> cs = await dbController.getCourses();
+    //List<Course> cs = await databaseService.getCourses();
     //developer.log(cs.toString());
 
-//    List<Course> cs = await dbController.getTeacherCourses(1);
+//    List<Course> cs = await databaseService.getTeacherCourses(1);
 //    developer.log(cs.toString());
   }
 

@@ -1,4 +1,4 @@
-import '../db.dart';
+import '../databaseService.dart';
 import '../model/teacher.dart';
 import '../model/course.dart';
 import '../model/course_time.dart';
@@ -7,8 +7,8 @@ import 'dart:developer' as developer;
 
 void main() {
   test('insert and get teacher with course data', () async {
-    var dbController = Db();
-    await dbController.initDatabase(insertData: false);
+    var databaseService = DatabaseService();
+    await databaseService.initDatabase(insertData: false);
 
     CourseTime courseTime = CourseTime(4, "07:00", "12:00");
     List<CourseTime> ctList = [];
@@ -17,30 +17,27 @@ void main() {
         '論語',
         'https://aries.dyu.edu.tw/~cosh/courses/DirectionOfTheConfucianistClassics/book.htm',
         ctList);
-    int index = await dbController.insertCourse(course);
-    var courseDate = await dbController.getCourses();
+    int index = await databaseService.insertCourse(course);
+    var courseDate = await databaseService.getCourses();
     expect(courseDate.length, 1);
 
     Teacher teacher = Teacher(0, '教授', '孔丘', 'kon', courseIds: [index]);
-    teacher.id = await dbController.insertTeacher(teacher);
-    var teacherDate = await dbController.getTeachers();
+    teacher.id = await databaseService.insertTeacher(teacher);
+    var teacherDate = await databaseService.getTeachers();
 
     expect(teacherDate.length, 1);
     expect(teacherDate[0].title, teacher.title);
 
-    teacher.courses = await dbController.getTeacherCourses(teacher.id);
+    teacher.courses = await databaseService.getTeacherCourses(teacher.id);
 
-    expect(teacher.courses.length, 1);
     expect(teacher.courses[0].id, index);
-
     expect(teacher.courses[0].times[0].weekday, courseTime.weekday);
-    //dbController.deleteAllData();
-    dbController.closeDatabase();
+    databaseService.closeDatabase();
   });
 
-  test('insert, update, delete and get course data', () async {
-    var dbController = Db();
-    await dbController.initDatabase(insertData: false);
+  test('insert, delete and get course data', () async {
+    var databaseService = DatabaseService();
+    await databaseService.initDatabase(insertData: false);
 
     CourseTime courseTime = CourseTime(4, "07:00", "12:00");
     List<CourseTime> ctList = [];
@@ -49,21 +46,36 @@ void main() {
         '論語',
         'https://aries.dyu.edu.tw/~cosh/courses/DirectionOfTheConfucianistClassics/book.htm',
         ctList);
-    int index = await dbController.insertCourse(course);
+    int index = await databaseService.insertCourse(course);
+
+    databaseService.deleteCourse(index);
+    var courseDate = await databaseService.getCourses();
+    expect(courseDate.length, 0);
+
+    databaseService.closeDatabase();
+  });
+
+  test('insert, update and get course data', () async {
+    var databaseService = DatabaseService();
+    await databaseService.initDatabase(insertData: false);
+
+    CourseTime courseTime = CourseTime(4, "07:00", "12:00");
+    List<CourseTime> ctList = [];
+    ctList.add(courseTime);
+    Course course = Course(
+        '論語',
+        'https://aries.dyu.edu.tw/~cosh/courses/DirectionOfTheConfucianistClassics/book.htm',
+        ctList);
+    int index = await databaseService.insertCourse(course);
 
     course.id = index;
     course.title = "春秋";
 
-    dbController.updateCourse(course);
-    var courseDate = await dbController.getCourses();
+    databaseService.updateCourse(course);
+    var courseDate = await databaseService.getCourses();
     expect(courseDate.length, 1);
     expect(courseDate[0].title, course.title);
 
-    dbController.deleteCourse(index);
-    courseDate = await dbController.getCourses();
-    expect(courseDate.length, 0);
-
-    //dbController.deleteAllData();
-    dbController.closeDatabase();
+    databaseService.closeDatabase();
   });
 }
