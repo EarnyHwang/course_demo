@@ -1,13 +1,16 @@
-import 'db.dart';
-import 'teacher.dart';
 import 'dart:io';
+import 'db.dart';
+import 'model/teacher.dart';
+import 'model/course.dart';
+import 'model/course_time.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as developer;
 
 void main() {
   runApp(const MyApp());
 }
 
-var db = Db();
+var dbController;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -45,9 +48,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  _MyHomePageState() {
+    dbController = Db();
+    dbController.initDatabase();
+    developer.log("_MyHomePageState");
+  }
+
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -55,8 +64,36 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       //_counter++;
-      db.insertTeacher(Teacher(1, 'title', 'name', 'image'));
+      //db.insertTeacher(Teacher(1, 'title', 'name', 'image'));
     });
+/*
+    developer.log("_incrementCounter");
+    Teacher t = Teacher(1, "title", "name", "image");
+    developer.log(t.toString());
+    dbController.insertTeacher(t);
+
+    var tt = dbController.getTeachers();
+    developer.log(tt.toString());
+*/
+    CourseTime ct = CourseTime(7, "00:00", "12:00");
+    List<CourseTime> ctList = [];
+    ctList.add(ct);
+    Course c = Course("title", "url", ctList);
+    //c.id = 1;
+    await dbController.insertCourse(c);
+    //c.title = 'title2';
+    //dbController.updateCourse(c);
+
+    //dbController.deleteCourse(1);
+
+    //List<Teacher> ts = await dbController.getTeachers();
+    //developer.log(ts.toString());
+
+    //List<Course> cs = await dbController.getCourses();
+    //developer.log(cs.toString());
+
+//    List<Course> cs = await dbController.getTeacherCourses(1);
+//    developer.log(cs.toString());
   }
 
   @override
