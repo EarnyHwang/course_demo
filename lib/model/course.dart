@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'course_time.dart';
 
 class Course {
@@ -23,10 +22,5 @@ class Course {
           }
       ].toString()
     };
-  }
-
-  @override
-  String toString() {
-    return 'Course{id: $id, title:$title, url: $url, times:$times}';
   }
 }

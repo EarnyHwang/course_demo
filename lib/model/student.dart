@@ -17,9 +17,4 @@ class Student {
       'courseIDs': courseIDs.toString(),
     };
   }
-
-  @override
-  String toString() {
-    return 'Student{id: $id, user_id:$userId, name: $name, courseIDs: $courseIDs}';
-  }
 }

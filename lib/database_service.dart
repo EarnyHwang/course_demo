@@ -1,13 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'model/teacher.dart';
 import 'model/course.dart';
 import 'model/course_time.dart';
-import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'dart:developer' as developer;
 
 class DatabaseService {
   DatabaseService();
@@ -15,16 +10,10 @@ class DatabaseService {
   var db;
 
   initDatabase({bool insertData = true}) async {
-    //print("initDatabase");
-
     sqfliteFfiInit();
-
-    //print("sqfliteFfiInit");
 
     var databaseFactory = databaseFactoryFfi;
     db = await databaseFactory.openDatabase(inMemoryDatabasePath);
-
-    //print("sqfliteFfiInit DB open");
 
     await db.execute('''
       CREATE TABLE Users (
@@ -57,39 +46,45 @@ class DatabaseService {
       )''');
 
     if (insertData) {
-      initDemoData();
-    } else {}
+      await initDemoData();
+    }
   }
 
-  void initDemoData() async {
+  initDemoData() async {
     await db.insert('Courses', <String, Object?>{
-      'title': 'title',
-      'url': 'url',
+      'title': '基礎程式設計',
+      'url':
+          'https://class-qry.acad.ncku.edu.tw/syllabus/online_display.php?syear=0112&sem=1&co_no=F711110&class_code=',
       'times': '[{"weekday":1, "start":"08:00", "end":"10:00"}]'
     });
 
     await db.insert('Courses', <String, Object?>{
-      'title': 'title2',
-      'url': 'url2',
-      'times': '[{"weekday":2, "start":"08:00", "end":"10:00"}]'
+      'title': '人工智慧總整與實作',
+      'url': 'https://www.csie.ncku.edu.tw/zh-hant/admission/ai',
+      'times': '[{"weekday":2, "start":"16:00", "end":"17:00"}]'
     });
-/*
-    var result = await db.query('Courses');
-    developer.log(result.toString());
-*/
-/*
-    await db.insert('Users', <String, Object?>{
-      'id': 1,
-      'account': 'account',
-      'password': 'password'
+
+    await db.insert('Courses', <String, Object?>{
+      'title': '建築概論',
+      'url':
+          'https://class-qry.acad.ncku.edu.tw/syllabus/online_display.php?syear=0112&sem=1&co_no=E711600&class_code=',
+      'times': '[{"weekday":5, "start":"13:30", "end":"16:30"}]'
     });
-*/
+
     await db.insert('Teachers', <String, Object?>{
-      'title': 'title',
-      'name': 'name',
-      'image': 'image',
+      'title': 'Professor',
+      'name': 'Mishel Stark',
+      'image': 'emily',
       'user_id': 1,
-      'course_ids': '[2]',
+      'course_ids': '[1, 2]',
+    });
+
+    await db.insert('Teachers', <String, Object?>{
+      'title': 'Lecturer',
+      'name': 'Leo Wilson',
+      'image': 'leo',
+      'user_id': 2,
+      'course_ids': '[3]',
     });
   }
 
@@ -106,7 +101,6 @@ class DatabaseService {
 
   Future<List<Teacher>> getTeachers() async {
     var result = await db.query('Teachers');
-
     List<Teacher> teachers = [];
     result.forEach((r) => {
           teachers.add(Teacher(r['user_id'], r['title'], r['name'], r['image'],
@@ -114,6 +108,26 @@ class DatabaseService {
               courseIds:
                   List<int>.from(jsonDecode(r['course_ids']).map((i) => i))))
         });
+
+    for (Teacher teacher in teachers) {
+      result = await db.query('Courses',
+          where:
+              "id in (${List.filled(teacher.courseIds.length, '?').join(',')})",
+          whereArgs: teacher.courseIds);
+
+      List<Course> c = [];
+
+      result.forEach((r) => {
+            c.add(Course(
+                r['title'],
+                r['url'],
+                List<CourseTime>.from(jsonDecode(r['times']).map(
+                    (t) => CourseTime(t['weekday'], t['start'], t['end']))),
+                id: r['id']))
+          });
+
+      teacher.courses = c;
+    }
 
     return teachers;
   }
@@ -124,9 +138,6 @@ class DatabaseService {
       teacher.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-
-    developer.log(result.toString());
-
     return result;
   }
 

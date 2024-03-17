@@ -1,9 +1,8 @@
-import '../databaseService.dart';
+import '../database_service.dart';
 import '../model/teacher.dart';
 import '../model/course.dart';
 import '../model/course_time.dart';
 import 'package:test/test.dart';
-import 'dart:developer' as developer;
 
 void main() {
   test('insert and get teacher with course data', () async {
