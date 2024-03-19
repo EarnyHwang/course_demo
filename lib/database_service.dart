@@ -73,7 +73,7 @@ class DatabaseService {
 
     await db.insert('Teachers', <String, Object?>{
       'title': 'Professor',
-      'name': 'Mishel Stark',
+      'name': 'Michelle Stark',
       'image': 'emily',
       'user_id': 1,
       'course_ids': '[1, 2]',

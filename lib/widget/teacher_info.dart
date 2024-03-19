@@ -23,11 +23,9 @@ class _TeacherInfo extends State<TeacherInfo> {
     return Card(
         color: Colors.white,
         shadowColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(4)),
-            side: !isExpanded
-                ? BorderSide.none
-                : const BorderSide(width: 0.5, color: Colors.black)),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            side: BorderSide(width: 0.7, color: Colors.black)),
         child: ExpansionTile(
           backgroundColor: Colors.transparent,
           collapsedIconColor: Colors.black,
